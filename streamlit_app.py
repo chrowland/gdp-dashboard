@@ -1,3 +1,4 @@
+statsmodels
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -105,3 +106,71 @@ with col2:
 
     st.write("**Noise Component**")
     st.line_chart(df["Noise"])
+
+from statsmodels.tsa.seasonal import seasonal_decompose, STL
+st.header("🔍 Time Series Decomposition Analysis")
+
+# 1) Train/Test Split Slider
+st.subheader("1️⃣ Select Train/Test Split Point")
+split_index = st.slider(
+    "Select the number of months to include in the training set:",
+    min_value=24,
+    max_value=len(df),
+    value=int(len(df) * 0.8),
+    step=1
+)
+
+# Split the data
+train_df = df.iloc[:split_index]
+test_df = df.iloc[split_index:]
+
+# 2) Decomposition Method Selection
+st.subheader("2️⃣ Choose Decomposition Method")
+decomposition_method = st.selectbox(
+    "Select a decomposition method:",
+    options=["seasonal_decompose", "STL"]
+)
+
+# Perform decomposition on the training data
+if decomposition_method == "seasonal_decompose":
+    with st.spinner("Performing seasonal decomposition..."):
+        result = seasonal_decompose(train_df["Composite"], model='additive', period=12)
+        estimated_trend = result.trend
+        estimated_seasonal = result.seasonal
+        estimated_residual = result.resid
+elif decomposition_method == "STL":
+    with st.spinner("Performing STL decomposition..."):
+        stl = STL(train_df["Composite"], period=12)
+        result = stl.fit()
+        estimated_trend = result.trend
+        estimated_seasonal = result.seasonal
+        estimated_residual = result.resid
+
+# 3) Component Comparison Charts
+st.subheader("3️⃣ Compare True vs. Estimated Components")
+
+# Align true and estimated components
+aligned_index = estimated_trend.dropna().index
+true_trend = train_df.loc[aligned_index, "Trend"]
+true_seasonal = train_df.loc[aligned_index, "Seasonality"]
+true_noise = train_df.loc[aligned_index, "Noise"]
+
+# Create DataFrames for comparison
+comparison_df = pd.DataFrame({
+    "True Trend": true_trend,
+    "Estimated Trend": estimated_trend.dropna(),
+    "True Seasonality": true_seasonal,
+    "Estimated Seasonality": estimated_seasonal.dropna(),
+    "True Noise": true_noise,
+    "Estimated Residual": estimated_residual.dropna()
+})
+
+# Plot comparisons
+st.write("**Trend Comparison**")
+st.line_chart(comparison_df[["True Trend", "Estimated Trend"]])
+
+st.write("**Seasonality Comparison**")
+st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
+
+st.write("**Noise/Residual Comparison**")
+st.line_chart(comparison_df[["True Noise", "Estimated Residual"]])
