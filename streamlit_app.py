@@ -1,151 +1,107 @@
 import streamlit as st
 import pandas as pd
-import math
-from pathlib import Path
+import numpy as np
+import datetime
 
-# Set the title and favicon that appear in the Browser's tab bar.
-st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+# Set page configuration
+st.set_page_config(page_title="Time Series Seasonality Simulator", layout="wide")
+
+st.title("📈 Time Series Seasonality Simulator")
+
+# Sidebar for user inputs
+st.sidebar.header("Configure Time Series Components")
+
+# Trend selection
+trend_type = st.sidebar.selectbox(
+    "Select Trend Type",
+    options=["Linear", "Exponential", "Quadratic"]
 )
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
+# Trend parameters
+if trend_type == "Linear":
+    slope = st.sidebar.slider("Slope", min_value=-5.0, max_value=5.0, value=0.5, step=0.1)
+    intercept = st.sidebar.slider("Intercept", min_value=-50.0, max_value=50.0, value=0.0, step=1.0)
+elif trend_type == "Exponential":
+    base = st.sidebar.slider("Base", min_value=0.1, max_value=5.0, value=1.1, step=0.1)
+    rate = st.sidebar.slider("Rate", min_value=0.01, max_value=1.0, value=0.05, step=0.01)
+elif trend_type == "Quadratic":
+    a = st.sidebar.slider("Coefficient a", min_value=-1.0, max_value=1.0, value=0.01, step=0.01)
+    b = st.sidebar.slider("Coefficient b", min_value=-5.0, max_value=5.0, value=0.5, step=0.1)
+    c = st.sidebar.slider("Coefficient c", min_value=-50.0, max_value=50.0, value=0.0, step=1.0)
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
+# Cycle parameters
+st.sidebar.subheader("Cycle Component")
+cycle_amplitude = st.sidebar.slider("Cycle Amplitude", min_value=0.0, max_value=10.0, value=2.0, step=0.1)
+cycle_period = st.sidebar.slider("Cycle Period (months)", min_value=6, max_value=60, value=24, step=1)
+cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_value=2*np.pi, value=0.0, step=0.1)
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
+# Seasonality parameters
+st.sidebar.subheader("Seasonality Component")
+seasonality_amplitude = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
+# Noise parameters
+st.sidebar.subheader("Noise Component")
+noise_std = st.sidebar.slider("Noise Standard Deviation", min_value=0.0, max_value=5.0, value=0.5, step=0.1)
 
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
+# Generate date range
+start_date = datetime.date(2018, 1, 1)
+end_date = datetime.date.today()
+dates = pd.date_range(start=start_date, end=end_date, freq='MS')
+n = len(dates)
+t = np.arange(n)
 
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
+# Generate components
+# Trend
+if trend_type == "Linear":
+    trend = intercept + slope * t
+elif trend_type == "Exponential":
+    trend = base * np.exp(rate * t)
+elif trend_type == "Quadratic":
+    trend = a * t**2 + b * t + c
 
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
+# Cycle
+cycle = cycle_amplitude * np.sin(2 * np.pi * t / cycle_period + cycle_phase)
 
-    return gdp_df
+# Seasonality
+seasonality = seasonality_amplitude * np.sin(2 * np.pi * t / 12)
 
-gdp_df = get_gdp_data()
+# Noise
+np.random.seed(42)  # For reproducibility
+noise = np.random.normal(0, noise_std, n)
 
-# -----------------------------------------------------------------------------
-# Draw the actual page
+# Composite time series
+composite = trend + cycle + seasonality + noise
 
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
+# Create DataFrame
+df = pd.DataFrame({
+    "Date": dates,
+    "Composite": composite,
+    "Trend": trend,
+    "Cycle": cycle,
+    "Seasonality": seasonality,
+    "Noise": noise
+})
+df.set_index("Date", inplace=True)
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
+# Display composite time series
+st.subheader("📊 Composite Time Series")
+st.line_chart(df["Composite"])
 
-# Add some spacing
-''
-''
+# Display individual components
+st.subheader("🔍 Individual Components")
 
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
+col1, col2 = st.columns(2)
 
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
+with col1:
+    st.write("**Trend Component**")
+    st.line_chart(df["Trend"])
 
-countries = gdp_df['Country Code'].unique()
+    st.write("**Seasonality Component**")
+    st.line_chart(df["Seasonality"])
 
-if not len(countries):
-    st.warning("Select at least one country")
+with col2:
+    st.write("**Cycle Component**")
+    st.line_chart(df["Cycle"])
 
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
-
-''
-''
-''
-
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
-
-st.header('GDP over time', divider='gray')
-
-''
-
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
-)
-
-''
-''
-
-
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
-
-st.header(f'GDP in {to_year}', divider='gray')
-
-''
-
-cols = st.columns(4)
-
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
-
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
-
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+    st.write("**Noise Component**")
+    st.line_chart(df["Noise"])
