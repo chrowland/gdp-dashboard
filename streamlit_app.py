@@ -76,7 +76,8 @@ trend_noise = trend+noise
 # Seasonality + Cycle
 season_cycle = seasonality + cycle
 
-#trend_cycle = trend + cycle
+# Trend + Cycle
+trend_cycle = trend + cycle
 
 # Composite time series
 composite = trend + cycle + seasonality + noise
