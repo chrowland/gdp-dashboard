@@ -76,6 +76,8 @@ trend_noise = trend+noise
 # Seasonality + Cycle
 season_cycle = seasonality + cycle
 
+#trend_cycle = trend + cycle
+
 # Composite time series
 composite = trend + cycle + seasonality + noise
 
@@ -88,7 +90,8 @@ df = pd.DataFrame({
     "Seasonality": seasonality,
     "Noise": noise,
     "Season_cycle": season_cycle,
-    "Trend_noise": trend_noise
+    "Trend_noise": trend_noise,
+    "Trend_cycle": trend_cycle
 })
 df.set_index("Date", inplace=True)
 
@@ -168,6 +171,7 @@ aligned_index = estimated_trend.dropna().index
 true_trend = train_df.loc[aligned_index, "Trend"]
 true_seasonal = train_df.loc[aligned_index, "Seasonality"]
 true_noise = train_df.loc[aligned_index, "Noise"]
+true_trend_cycle=df.loc[aligned_index, "Trend_cycle"]
 
 # Create DataFrames for comparison
 comparison_df = pd.DataFrame({
@@ -181,7 +185,7 @@ comparison_df = pd.DataFrame({
 
 # Plot comparisons
 st.write("**Trend Comparison**")
-st.line_chart(comparison_df[["True Trend", "Estimated Trend"]])
+st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend + True Cycle"]])
 
 st.write("**Seasonality Comparison**")
 st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
