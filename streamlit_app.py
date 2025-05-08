@@ -186,7 +186,7 @@ comparison_df = pd.DataFrame({
 
 # Plot comparisons
 st.write("**Trend Comparison**")
-st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend + True Cycle"]])
+st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend w Cycle"]])
 
 st.write("**Seasonality Comparison**")
 st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
