@@ -70,6 +70,12 @@ seasonality = seasonality_amplitude * np.sin(2 * np.pi * t / 12)
 np.random.seed(42)  # For reproducibility
 noise = np.random.normal(0, noise_std, n)
 
+# Trend + Noise
+trend_noise = trend+noise
+
+# Seasonality + Cycle
+season_cycle = seasonality + cycle
+
 # Composite time series
 composite = trend + cycle + seasonality + noise
 
@@ -80,7 +86,9 @@ df = pd.DataFrame({
     "Trend": trend,
     "Cycle": cycle,
     "Seasonality": seasonality,
-    "Noise": noise
+    "Noise": noise,
+    "Season_cycle": season_cycle,
+    "Trend_noise": trend_noise
 })
 df.set_index("Date", inplace=True)
 
@@ -100,12 +108,18 @@ with col1:
     st.write("**Noise Component**")
     st.line_chart(df["Noise"])
 
+    st.write("**Trend + Noise**")
+    st.line_chart(df["Trend_noise"]
+                  
 with col2:
     st.write("**Cycle Component**")
     st.line_chart(df["Cycle"])
 
     st.write("**Seasonality Component**")
     st.line_chart(df["Seasonality"])
+
+    st.write("**Seasonality + Cycle**")
+    st.line_chart(df["Season:cycle"])
 
 from statsmodels.tsa.seasonal import seasonal_decompose, STL
 st.header("🔍 Time Series Decomposition Analysis")
