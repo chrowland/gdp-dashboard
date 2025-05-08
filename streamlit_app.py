@@ -20,7 +20,7 @@ trend_type = st.sidebar.selectbox(
 
 # Trend parameters
 if trend_type == "Linear":
-    slope = st.sidebar.slider("Slope", min_value=-5.0, max_value=5.0, value=0.2, step=0.1)
+    slope = st.sidebar.slider("Slope", min_value=0.0, max_value=5.0, value=0.2, step=0.1)
     intercept = st.sidebar.slider("Intercept", min_value=-50.0, max_value=50.0, value=10.0, step=1.0)
 elif trend_type == "Exponential":
     base = st.sidebar.slider("Base", min_value=0.1, max_value=5.0, value=1.1, step=0.1)
