@@ -109,7 +109,7 @@ with col1:
     st.line_chart(df["Noise"])
 
     st.write("**Trend and Noise**")
-    st.line_chart(df["Trend_noise"]
+    st.line_chart(df["Trend_noise"])
                   
 with col2:
     st.write("**Cycle Component**")
