@@ -181,7 +181,8 @@ comparison_df = pd.DataFrame({
     "True Seasonality": true_seasonal,
     "Estimated Seasonality": estimated_seasonal.dropna(),
     "True Noise": true_noise,
-    "Estimated Residual": estimated_residual.dropna()
+    "Estimated Residual": estimated_residual.dropna(),
+    "True Trend w Cycle": true_trend_cycle
 })
 
 # Plot comparisons
