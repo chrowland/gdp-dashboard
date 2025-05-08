@@ -119,7 +119,7 @@ with col2:
     st.line_chart(df["Seasonality"])
 
     st.write("**Seasonality and Cycle**")
-    st.line_chart(df["Season:cycle"])
+    st.line_chart(df["Season_cycle"])
 
 from statsmodels.tsa.seasonal import seasonal_decompose, STL
 st.header("🔍 Time Series Decomposition Analysis")
