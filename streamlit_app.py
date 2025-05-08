@@ -136,7 +136,7 @@ split_index = st.slider(
     value=int(len(df) * 0.8),
     step=1
 )
-
+ 
 # Split the data
 train_df = df.iloc[:split_index]
 test_df = df.iloc[split_index:]
