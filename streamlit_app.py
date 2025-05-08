@@ -39,6 +39,7 @@ cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_valu
 # Seasonality parameters
 st.sidebar.subheader("Seasonality Component")
 seasonality_amplitude = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+seasonality_mult = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=3.0, value=0.0, step=1.0)
 
 # Noise parameters
 st.sidebar.subheader("Noise Component")
@@ -63,8 +64,11 @@ elif trend_type == "Quadratic":
 # Cycle
 cycle = cycle_amplitude * np.sin(2 * np.pi * t / cycle_period + cycle_phase)
 
+# Trend + Cycle
+trend_cycle = trend + cycle
+
 # Seasonality
-seasonality = seasonality_amplitude * np.sin(2 * np.pi * t / 12)
+seasonality = seasonality_amplitude* (1+seasonality_mult*trend_cycle)* np.sin(2 * np.pi * t / 12)
 
 # Noise
 np.random.seed(42)  # For reproducibility
@@ -75,9 +79,6 @@ trend_noise = trend+noise
 
 # Seasonality + Cycle
 season_cycle = seasonality + cycle
-
-# Trend + Cycle
-trend_cycle = trend + cycle
 
 # Composite time series
 composite = trend + cycle + seasonality + noise
