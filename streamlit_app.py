@@ -20,7 +20,7 @@ trend_type = st.sidebar.selectbox(
 
 # Trend parameters
 if trend_type == "Linear":
-    slope = st.sidebar.slider("Slope", min_value=-5.0, max_value=5.0, value=0.5, step=0.1)
+    slope = st.sidebar.slider("Slope", min_value=-5.0, max_value=5.0, value=0.2, step=0.1)
     intercept = st.sidebar.slider("Intercept", min_value=-50.0, max_value=50.0, value=10.0, step=1.0)
 elif trend_type == "Exponential":
     base = st.sidebar.slider("Base", min_value=0.1, max_value=5.0, value=1.1, step=0.1)
@@ -32,18 +32,18 @@ elif trend_type == "Quadratic":
 
 # Cycle parameters
 st.sidebar.subheader("Cycle Component")
-cycle_amplitude = st.sidebar.slider("Cycle Amplitude", min_value=0.0, max_value=10.0, value=2.0, step=0.1)
-cycle_period = st.sidebar.slider("Cycle Period (months)", min_value=6, max_value=60, value=38, step=1)
-cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_value=2*np.pi, value=0.0, step=0.1)
+cycle_amplitude = st.sidebar.slider("Cycle Amplitude", min_value=0.0, max_value=10.0, value=6.7, step=0.1)
+cycle_period = st.sidebar.slider("Cycle Period (months)", min_value=6, max_value=60, value=43, step=1)
+cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_value=2*np.pi, value=1.5, step=0.1)
 
 # Seasonality parameters
 st.sidebar.subheader("Seasonality Component")
-seasonality_amplitude = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+seasonality_amplitude = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=10.0, value=6.0, step=0.1)
 seasonality_mult = st.sidebar.slider("Seasonality Multiplier", min_value=0.0, max_value=3.0, value=0.0, step=1.0)
 
 # Noise parameters
 st.sidebar.subheader("Noise Component")
-noise_std = st.sidebar.slider("Noise Standard Deviation", min_value=0.0, max_value=5.0, value=0.5, step=0.1)
+noise_std = st.sidebar.slider("Noise Standard Deviation", min_value=0.0, max_value=5.0, value=2.0, step=0.1)
 
 # Generate date range
 start_date = datetime.date(2018, 1, 1)
