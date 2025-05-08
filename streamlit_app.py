@@ -108,7 +108,7 @@ with col1:
     st.write("**Noise Component**")
     st.line_chart(df["Noise"])
 
-    st.write("**Trend + Noise**")
+    st.write("**Trend and Noise**")
     st.line_chart(df["Trend_noise"]
                   
 with col2:
@@ -118,7 +118,7 @@ with col2:
     st.write("**Seasonality Component**")
     st.line_chart(df["Seasonality"])
 
-    st.write("**Seasonality + Cycle**")
+    st.write("**Seasonality and Cycle**")
     st.line_chart(df["Season:cycle"])
 
 from statsmodels.tsa.seasonal import seasonal_decompose, STL
