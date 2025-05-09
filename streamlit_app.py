@@ -156,7 +156,7 @@ Model = st.selectbox("Select seasonality model:", options=["Additive", "Multipli
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
     with st.spinner("Performing seasonal decomposition..."):
-        result = seasonal_decompose(train_df["Composite"], model=Model.lower(), period=12)
+        result = seasonal_decompose(train_df["Composite"], model="multiplicative", period=12)
         estimated_trend = result.trend
         estimated_seasonal = result.seasonal
         estimated_residual = result.resid
