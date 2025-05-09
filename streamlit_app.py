@@ -157,7 +157,6 @@ decomposition_method = st.selectbox(
 
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
-    #
     with st.spinner("Performing seasonal decomposition..."):
         result = seasonal_decompose(train_df["Composite"], model=Model.lower(), period=12)
         estimated_trend = result.trend
