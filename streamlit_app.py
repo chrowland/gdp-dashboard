@@ -153,7 +153,7 @@ decomposition_method = st.selectbox(
     "Select a decomposition method:",
     options=["seasonal_decompose", "STL"]
 )
-#Model = st.selectbox("Select seasonality model:", options=["Additive", "Multiplicative"])
+
 
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
