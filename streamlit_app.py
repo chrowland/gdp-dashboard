@@ -153,10 +153,11 @@ decomposition_method = st.selectbox(
     "Select a decomposition method:",
     options=["seasonal_decompose", "STL"]
 )
-Model = st.selectbox("Select seasonality model:", options=["Additive", "Multiplicative"])
+#Model = st.selectbox("Select seasonality model:", options=["Additive", "Multiplicative"])
 
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
+    Model = st.selectbox("Select seasonality model:", options=["Additive", "Multiplicative"])
     with st.spinner("Performing seasonal decomposition..."):
         result = seasonal_decompose(train_df["Composite"], model=Model.lower(), period=12)
         estimated_trend = result.trend
@@ -192,6 +193,8 @@ comparison_df = pd.DataFrame({
     "True Trend w Cycle": true_trend_cycle,
     "Test": test
 })
+
+if 
 
 # Plot comparisons
 st.write("**Trend Comparison**")
