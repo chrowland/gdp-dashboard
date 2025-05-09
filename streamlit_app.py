@@ -153,7 +153,6 @@ decomposition_method = st.selectbox(
     "Select a decomposition method:",
     options=["seasonal_decompose", "STL"]
 )
-st.write("**Is github even working still?**")
 
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
@@ -191,7 +190,7 @@ comparison_df = pd.DataFrame({
     "True Noise": true_noise,
     "Estimated Residual": estimated_residual.dropna(),
     "True Trend w Cycle": true_trend_cycle,
-    "Test": test
+    "Estimated Seasonality Multiplicative": test
 })
  
 # Plot comparisons
@@ -199,7 +198,10 @@ st.write("**Trend Comparison**")
 st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend w Cycle"]])
 
 st.write("**Seasonality Comparison**")
-st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality", "Test"]])
+if Model=="Additive":
+    st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
+else:
+    st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality Multiplicative"]])
 
 st.write("**Noise/Residual Comparison**")
 st.line_chart(comparison_df[["True Noise", "Estimated Residual"]])
