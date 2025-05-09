@@ -157,6 +157,7 @@ st.write("**Is github even working still?**")
 
 # Perform decomposition on the training data
 if decomposition_method == "seasonal_decompose":
+    Model = st.selectbox("Select seasonality model:", options=["Additive", "Multiplicative"])
     with st.spinner("Performing seasonal decomposition..."):
         result = seasonal_decompose(train_df["Composite"], model=Model.lower(), period=12)
         estimated_trend = result.trend
@@ -198,7 +199,7 @@ st.write("**Trend Comparison**")
 st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend w Cycle"]])
 
 st.write("**Seasonality Comparison**")
-st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
+st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality", "Test"]])
 
 st.write("**Noise/Residual Comparison**")
 st.line_chart(comparison_df[["True Noise", "Estimated Residual"]])
