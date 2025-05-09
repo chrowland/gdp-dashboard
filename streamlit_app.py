@@ -192,7 +192,7 @@ comparison_df = pd.DataFrame({
     "True Trend w Cycle": true_trend_cycle,
     "Test": test
 })
-
+ 
 # Plot comparisons
 st.write("**Trend Comparison**")
 st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend w Cycle"]])
