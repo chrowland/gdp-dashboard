@@ -18,6 +18,8 @@ trend_type = st.sidebar.selectbox(
     options=["Linear", "Exponential", "Quadratic"]
 )
 
+intercept=1
+
 # Trend parameters
 if trend_type == "Linear":
     slope = st.sidebar.slider("Slope", min_value=0.0, max_value=5.0, value=0.2, step=0.1)
