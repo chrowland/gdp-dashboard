@@ -18,18 +18,18 @@ trend_type = st.sidebar.selectbox(
     options=["Linear", "Exponential", "Quadratic"]
 )
 
-#intercept=1
+intercept = st.sidebar.slider("Intercept", min_value=12.0, max_value=100.0, value=12.0, step=1.0)
 
 # Trend parameters
 if trend_type == "Linear":
     slope = st.sidebar.slider("Slope", min_value=0.0, max_value=5.0, value=0.2, step=0.1)
-    intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
+    #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
 elif trend_type == "Exponential":
-    intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
+    #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
     base = st.sidebar.slider("Base", min_value=0.1, max_value=5.0, value=1.1, step=0.1)
     rate = st.sidebar.slider("Rate", min_value=0.01, max_value=1.0, value=0.05, step=0.01)
 elif trend_type == "Quadratic":
-    intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
+    #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
     a = st.sidebar.slider("Coefficient a", min_value=-1.0, max_value=1.0, value=0.01, step=0.01)
     b = st.sidebar.slider("Coefficient b", min_value=-5.0, max_value=5.0, value=0.5, step=0.1)
     c = st.sidebar.slider("Coefficient c", min_value=-50.0, max_value=50.0, value=0.0, step=1.0)
