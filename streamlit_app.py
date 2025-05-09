@@ -198,7 +198,7 @@ st.write("**Trend Comparison**")
 st.line_chart(comparison_df[["True Trend", "Estimated Trend","True Trend w Cycle"]])
 
 st.write("**Seasonality Comparison**")
-st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality","Test"]])
+st.line_chart(comparison_df[["True Seasonality", "Estimated Seasonality"]])
 
 st.write("**Noise/Residual Comparison**")
 st.line_chart(comparison_df[["True Noise", "Estimated Residual"]])
