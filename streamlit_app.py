@@ -27,7 +27,7 @@ if trend_type == "Linear":
 elif trend_type == "Exponential":
     #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
     base = st.sidebar.slider("Base", min_value=0.1, max_value=5.0, value=1.1, step=0.1)
-    rate = st.sidebar.slider("Rate", min_value=0.01, max_value=1.0, value=0.05, step=0.01)
+    rate = st.sidebar.slider("Rate", min_value=0.01, max_value=0.15, value=0.05, step=0.005)
 elif trend_type == "Quadratic":
     #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
     a = st.sidebar.slider("Coefficient a", min_value=-1.0, max_value=1.0, value=0.01, step=0.01)
