@@ -179,7 +179,7 @@ true_trend = train_df.loc[aligned_index, "Trend"]
 true_seasonal = train_df.loc[aligned_index, "Seasonality"]
 true_noise = train_df.loc[aligned_index, "Noise"]
 true_trend_cycle=df.loc[aligned_index, "Trend_cycle"]
-test=trend_cycle*(estimated_seasonal.dropna()-1)
+test=trend_cycle*(estimated_seasonal-1)
 
 # Create DataFrames for comparison
 comparison_df = pd.DataFrame({
@@ -190,7 +190,7 @@ comparison_df = pd.DataFrame({
     "True Noise": true_noise,
     "Estimated Residual": estimated_residual.dropna(),
     "True Trend w Cycle": true_trend_cycle,
-    "Test": test
+    "Test": test.dropna()
 })
 
 # Plot comparisons
