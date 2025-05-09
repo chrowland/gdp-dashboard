@@ -30,9 +30,9 @@ elif trend_type == "Exponential":
     rate = st.sidebar.slider("Rate", min_value=0.01, max_value=0.15, value=0.05, step=0.005)
 elif trend_type == "Quadratic":
     #intercept = st.sidebar.slider("Intercept", min_value=5.0, max_value=50.0, value=10.0, step=1.0)
-    a = st.sidebar.slider("Coefficient a", min_value=-1.0, max_value=1.0, value=0.01, step=0.01)
-    b = st.sidebar.slider("Coefficient b", min_value=-5.0, max_value=5.0, value=0.5, step=0.1)
-    c = st.sidebar.slider("Coefficient c", min_value=-50.0, max_value=50.0, value=0.0, step=1.0)
+    a = st.sidebar.slider("Coefficient a", min_value=0.0, max_value=2.0, value=0.01, step=0.01)
+    b = st.sidebar.slider("Coefficient b", min_value=0.0, max_value=10.0, value=0.5, step=0.1)
+    #c = st.sidebar.slider("Coefficient c", min_value=-50.0, max_value=50.0, value=0.0, step=1.0)
 
 # Cycle parameters
 st.sidebar.subheader("Cycle Component")
@@ -63,7 +63,7 @@ if trend_type == "Linear":
 elif trend_type == "Exponential":
     trend = intercept + base * np.exp(rate * t)
 elif trend_type == "Quadratic":
-    trend = intercept + a * t**2 + b * t + c
+    trend = intercept + a * t**2 + b * t
 
 # Cycle
 cycle = cycle_amplitude * np.sin(2 * np.pi * t / cycle_period + cycle_phase)
