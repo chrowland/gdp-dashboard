@@ -18,7 +18,7 @@ trend_type = st.sidebar.selectbox(
     options=["Linear", "Exponential", "Quadratic"]
 )
 
-intercept = st.sidebar.slider("Intercept", min_value=30.0, max_value=100.0, value=15.0, step=1.0)
+intercept = st.sidebar.slider("Intercept", min_value=30.0, max_value=100.0, value=30.0, step=1.0)
 
 # Trend parameters
 if trend_type == "Linear":
