@@ -178,7 +178,7 @@ aligned_index = estimated_trend.dropna().index
 true_trend = train_df.loc[aligned_index, "Trend"]
 true_seasonal = train_df.loc[aligned_index, "Seasonality"]
 true_noise = train_df.loc[aligned_index, "Noise"]
-true_trend_cycle=df.loc[aligned_index, "Trend_cycle"]
+true_trend_cycle=train_df.loc[aligned_index, "Trend_cycle"]
 test=true_trend_cycle*(estimated_seasonal-1)
 
 # Create DataFrames for comparison
