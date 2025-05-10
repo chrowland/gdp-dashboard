@@ -155,7 +155,7 @@ test_df = df.iloc[split_index:]
 st.subheader("2️⃣ Choose Decomposition Method")
 decomposition_method = st.selectbox(
     "Select a decomposition method:",
-    options=["seasonal_decompose", "STL"]
+    options=["seasonal_decompose", "STL", "Dummy Variable Regression", "SARIMA"]
 )
 
 Model="Additive"
