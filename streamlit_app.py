@@ -194,16 +194,6 @@ elif decomposition_method == "Dummy Variable Regression":
         estimated_trend = model.params['Time'] * df_dummies['Time'] + model.params['const']
         estimated_seasonal = model.predict(X) - estimated_trend
         estimated_residual = y - model.predict(X)
-        
-        #df_dummies = train_df.copy()
-        #df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
-        #month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
-        #X = sm.add_constant(month_dummies)
-        #y = df_dummies['Composite']
-        #model = sm.OLS(y, X).fit()
-        #estimated_seasonal = model.predict(X)
-        #estimated_trend = y - estimated_seasonal
-        #estimated_residual = y - estimated_seasonal - estimated_trend
 
 elif decomposition_method == "SARIMA":
     # Fit SARIMA model
@@ -283,26 +273,70 @@ with st.spinner("Generating forecasts..."):
         forecast_series.index = forecast_index
 
     elif decomposition_method == "Dummy Variable Regression":
-        # Create dummy variables for each month
-        df_dummies = train_df.copy()
-        df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
-        month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
-        X_train = sm.add_constant(month_dummies)
-        y_train = df_dummies['Composite']
+        with st.spinner("Generating forecasts using Dummy Variable Regression..."):
+        # Prepare the training data
+        df_train = train_df.copy()
+        df_train['Month'] = pd.DatetimeIndex(df_train.index).month
+        df_train['Time'] = np.arange(len(df_train))  # Linear time trend
+
+        # Create dummy variables for months
+        month_dummies_train = pd.get_dummies(df_train['Month'], prefix='month', drop_first=True, dtype=float)
+
+        # Combine trend and seasonal dummies
+        X_train = pd.concat([df_train['Time'], month_dummies_train], axis=1)
+        X_train = sm.add_constant(X_train)  # Adds intercept term
+
+        y_train = df_train['Composite']
+
+        # Fit the OLS model
         model = sm.OLS(y_train, X_train).fit()
 
-        # Prepare test set dummy variables
-        test_months = pd.DatetimeIndex(test_df.index).month
-        test_dummies = pd.get_dummies(test_months, prefix='month', drop_first=True, dtype=float)
-        # Ensure all dummy columns are present
-        for col in X_train.columns:
-            if col not in test_dummies.columns and col != 'const':
-                test_dummies[col] = 0
-        X_test = sm.add_constant(test_dummies)
-        X_test = X_test[X_train.columns]  # Ensure same column order
+        # Prepare the test data
+        df_test = test_df.copy()
+        df_test['Month'] = pd.DatetimeIndex(df_test.index).month
+        df_test['Time'] = np.arange(len(df_train), len(df_train) + len(df_test))  # Continue the time trend
 
+        # Create dummy variables for months in test data
+        month_dummies_test = pd.get_dummies(df_test['Month'], prefix='month', drop_first=True, dtype=float)
+
+        # Ensure all dummy columns are present in test data
+        for col in month_dummies_train.columns:
+            if col not in month_dummies_test.columns:
+                month_dummies_test[col] = 0
+        month_dummies_test = month_dummies_test[month_dummies_train.columns]  # Ensure same column order
+
+        # Combine trend and seasonal dummies for test data
+        X_test = pd.concat([df_test['Time'], month_dummies_test], axis=1)
+        X_test = sm.add_constant(X_test)
+        X_test = X_test[X_train.columns]  # Ensure same column order as training data
+
+        # Generate forecasts
         forecast_values = model.predict(X_test)
-        forecast_series = pd.Series(forecast_values.values, index=forecast_index)
+        forecast_series = pd.Series(forecast_values.values, index=test_df.index)
+
+        
+        
+        
+        ## Create dummy variables for each month
+        #df_dummies = train_df.copy()
+        #df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+        #month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
+        #X_train = sm.add_constant(month_dummies)
+        #y_train = df_dummies['Composite']
+        #model = sm.OLS(y_train, X_train).fit()
+
+        ## Prepare test set dummy variables
+        #test_months = pd.DatetimeIndex(test_df.index).month
+        #test_dummies = pd.get_dummies(test_months, prefix='month', drop_first=True, dtype=float)
+        ## Ensure all dummy columns are present
+        #for col in X_train.columns:
+        #    if col not in test_dummies.columns and col != 'const':
+        #        test_dummies[col] = 0
+        #X_test = sm.add_constant(test_dummies)
+        #X_test = X_test[X_train.columns]  # Ensure same column order
+
+        #forecast_values = model.predict(X_test)
+        #forecast_series = pd.Series(forecast_values.values, index=forecast_index)
 
     elif decomposition_method == "SARIMA":
         sarima_model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
