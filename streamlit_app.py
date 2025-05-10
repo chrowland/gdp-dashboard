@@ -177,16 +177,33 @@ elif decomposition_method == "STL":
         estimated_residual = result.resid
 elif decomposition_method == "Dummy Variable Regression":
     # Create dummy variables for each month
-    with st.spinner("Performing Dummy Variable Decomposition..."):
+    with st.spinner("Performing Dummy Variable Decomposition..."):        
+        # Prepare the data
         df_dummies = train_df.copy()
         df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+        df_dummies['Time'] = np.arange(len(df_dummies))  # Linear time trend
+        # Create dummy variables for months
         month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
-        X = sm.add_constant(month_dummies)
+        # Combine trend and seasonal dummies
+        X = pd.concat([df_dummies['Time'], month_dummies], axis=1)
+        X = sm.add_constant(X)  # Adds intercept term
         y = df_dummies['Composite']
+        # Fit the OLS model
         model = sm.OLS(y, X).fit()
-        estimated_seasonal = model.predict(X)
-        estimated_trend = y - estimated_seasonal
-        estimated_residual = y - estimated_seasonal - estimated_trend
+        # Extract estimated components
+        estimated_trend = model.params['Time'] * df_dummies['Time'] + model.params['const']
+        estimated_seasonal = model.predict(X) - estimated_trend
+        estimated_residual = y - model.predict(X)
+        
+        #df_dummies = train_df.copy()
+        #df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+        #month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
+        #X = sm.add_constant(month_dummies)
+        #y = df_dummies['Composite']
+        #model = sm.OLS(y, X).fit()
+        #estimated_seasonal = model.predict(X)
+        #estimated_trend = y - estimated_seasonal
+        #estimated_residual = y - estimated_seasonal - estimated_trend
 
 elif decomposition_method == "SARIMA":
     # Fit SARIMA model
