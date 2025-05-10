@@ -299,3 +299,30 @@ comparison_df = pd.DataFrame({
 # Plot the forecasts
 st.subheader("🔮 Forecast vs Actual")
 st.line_chart(comparison_df)
+
+# Combine training and test sets for the full composite series
+full_series = pd.concat([train_df['Composite'], test_df['Composite']])
+
+# Create a DataFrame for plotting
+plot_df = pd.DataFrame({
+    'Composite': full_series,
+    'Forecast': forecast_series
+})
+
+# Plot the full composite series and forecasted values
+st.subheader("🔮 Forecast vs Actual with Historical Composite Series")
+st.line_chart(plot_df)
+
+# Calculate MAPE
+def mean_absolute_percentage_error(y_true, y_pred):
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    # Avoid division by zero
+    non_zero_indices = y_true != 0
+    y_true = y_true[non_zero_indices]
+    y_pred = y_pred[non_zero_indices]
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+mape_value = mean_absolute_percentage_error(test_df['Composite'], forecast_series)
+
+# Display MAPE
+st.metric(label="📉 Mean Absolute Percentage Error (MAPE)", value=f"{mape_value:.2f}%")
