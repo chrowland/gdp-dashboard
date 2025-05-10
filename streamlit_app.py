@@ -177,23 +177,25 @@ elif decomposition_method == "STL":
         estimated_residual = result.resid
 elif decomposition_method == "Dummy Variable Regression":
     # Create dummy variables for each month
-    df_dummies = train_df.copy()
-    df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
-    month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
-    X = sm.add_constant(month_dummies)
-    y = df_dummies['Composite']
-    model = sm.OLS(y, X).fit()
-    estimated_seasonal = model.predict(X)
-    estimated_trend = y - estimated_seasonal
-    estimated_residual = y - estimated_seasonal - estimated_trend
+    with st.spinner("Performing Dummy Variable Decomposition..."):
+        df_dummies = train_df.copy()
+        df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+        month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
+        X = sm.add_constant(month_dummies)
+        y = df_dummies['Composite']
+        model = sm.OLS(y, X).fit()
+        estimated_seasonal = model.predict(X)
+        estimated_trend = y - estimated_seasonal
+        estimated_residual = y - estimated_seasonal - estimated_trend
 
 elif decomposition_method == "SARIMA":
     # Fit SARIMA model
-    model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
-    result = model.fit(disp=False)
-    estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
-    estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
-    estimated_residual = result.resid
+    with st.spinner("Performing SARIMA Decomposition..."):
+        model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+        result = model.fit(disp=False)
+        estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
+        estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
+        estimated_residual = result.resid
 
 # 3) Component Comparison Charts
 st.subheader("3️⃣ Compare True vs. Estimated Components")
@@ -235,3 +237,65 @@ if Model=="Additive":
     st.line_chart(comparison_df[["True Noise", "Estimated Residual"]])
 else:
     st.line_chart(comparison_df[["True Noise", "Estimated Residual Multiplicative"]])
+
+st.header("📈 Forecasting on Test Set")
+
+# Forecasting based on the selected decomposition method
+with st.spinner("Generating forecasts..."):
+    forecast_steps = len(test_df)
+    forecast_index = test_df.index
+
+    if decomposition_method == "seasonal_decompose":
+        # Use last observed trend value
+        last_trend = estimated_trend.dropna().iloc[-1]
+        # Repeat the last seasonal cycle
+        seasonal_pattern = estimated_seasonal.dropna()[-12:]
+        seasonal_forecast = np.tile(seasonal_pattern.values, int(np.ceil(forecast_steps / 12)))[:forecast_steps]
+        # Forecast is sum of last trend and seasonal pattern
+        forecast_values = last_trend + seasonal_forecast
+        forecast_series = pd.Series(forecast_values, index=forecast_index)
+
+    elif decomposition_method == "STL":
+        from statsmodels.tsa.forecasting.stl import STLForecast
+        stl_forecast = STLForecast(train_df["Composite"], model=sm.tsa.ARIMA, model_kwargs={"order": (1, 1, 1)}, period=12)
+        stl_result = stl_forecast.fit()
+        forecast_series = stl_result.forecast(steps=forecast_steps)
+        forecast_series.index = forecast_index
+
+    elif decomposition_method == "Dummy Variable Regression":
+        # Create dummy variables for each month
+        df_dummies = train_df.copy()
+        df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+        month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
+        X_train = sm.add_constant(month_dummies)
+        y_train = df_dummies['Composite']
+        model = sm.OLS(y_train, X_train).fit()
+
+        # Prepare test set dummy variables
+        test_months = pd.DatetimeIndex(test_df.index).month
+        test_dummies = pd.get_dummies(test_months, prefix='month', drop_first=True, dtype=float)
+        # Ensure all dummy columns are present
+        for col in X_train.columns:
+            if col not in test_dummies.columns and col != 'const':
+                test_dummies[col] = 0
+        X_test = sm.add_constant(test_dummies)
+        X_test = X_test[X_train.columns]  # Ensure same column order
+
+        forecast_values = model.predict(X_test)
+        forecast_series = pd.Series(forecast_values.values, index=forecast_index)
+
+    elif decomposition_method == "SARIMA":
+        sarima_model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+        sarima_result = sarima_model.fit(disp=False)
+        forecast_values = sarima_result.forecast(steps=forecast_steps)
+        forecast_series = pd.Series(forecast_values.values, index=forecast_index)
+
+# Combine actual and forecasted data for comparison
+comparison_df = pd.DataFrame({
+    "Actual": test_df["Composite"],
+    "Forecast": forecast_series
+})
+
+# Plot the forecasts
+st.subheader("🔮 Forecast vs Actual")
+st.line_chart(comparison_df)
