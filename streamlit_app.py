@@ -247,7 +247,8 @@ with st.spinner("Generating forecasts..."):
 
     if decomposition_method == "seasonal_decompose":
         # Use last observed trend value
-        last_trend = estimated_trend.dropna().iloc[-1]
+        #last_trend = estimated_trend.dropna().iloc[-1]
+        last_trend=test_df["Trend_cycle"]
         # Repeat the last seasonal cycle
         seasonal_pattern = estimated_seasonal.dropna()[-12:]
         seasonal_forecast = np.tile(seasonal_pattern.values, int(np.ceil(forecast_steps / 12)))[:forecast_steps]
