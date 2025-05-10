@@ -102,7 +102,7 @@ df = pd.DataFrame({
 df.set_index("Date", inplace=True)
 
 # Display composite time series
-st.subheader("📊 Composite Time Series")
+st.subheader("Composite Time Series")
 st.line_chart(df["Composite"])
 
 # Display individual components
@@ -247,13 +247,15 @@ with st.spinner("Generating forecasts..."):
 
     if decomposition_method == "seasonal_decompose":
         # Use last observed trend value
-        #last_trend = estimated_trend.dropna().iloc[-1]
         last_trend=test_df["Trend_cycle"]
         # Repeat the last seasonal cycle
         seasonal_pattern = estimated_seasonal.dropna()[-12:]
         seasonal_forecast = np.tile(seasonal_pattern.values, int(np.ceil(forecast_steps / 12)))[:forecast_steps]
         # Forecast is sum of last trend and seasonal pattern
-        forecast_values = last_trend + seasonal_forecast
+        if Model=="Additive":
+            forecast_values = last_trend + seasonal_forecast
+        else:
+            forecast_values=last_trend*seasonal_forecast
         forecast_series = pd.Series(forecast_values, index=forecast_index)
 
     elif decomposition_method == "STL":
