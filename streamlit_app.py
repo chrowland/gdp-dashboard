@@ -134,6 +134,7 @@ Recipe=df
 st.download_button("Download Timeseries Recipe",Recipe.to_csv(),"TSRecipe.csv",use_container_width=True)
 
 from statsmodels.tsa.seasonal import seasonal_decompose, STL
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 st.header("🔍 Time Series Decomposition Analysis")
 
 # 1) Train/Test Split Slider
@@ -174,6 +175,26 @@ elif decomposition_method == "STL":
         estimated_trend = result.trend
         estimated_seasonal = result.seasonal
         estimated_residual = result.resid
+elif decomposition_method == "Dummy Variable Regression":
+    # Create dummy variables for each month
+    df_dummies = train_df.copy()
+    df_dummies['Month'] = df_dummies.index.month
+    month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True)
+    X = month_dummies
+    X = sm.add_constant(X)
+    y = df_dummies['Composite']
+    model = sm.OLS(y, X).fit()
+    estimated_seasonal = model.predict(X)
+    estimated_trend = y - estimated_seasonal
+    estimated_residual = y - estimated_seasonal - estimated_trend
+
+elif decomposition_method == "SARIMA":
+    # Fit SARIMA model
+    model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+    result = model.fit(disp=False)
+    estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
+    estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
+    estimated_residual = result.resid
 
 # 3) Component Comparison Charts
 st.subheader("3️⃣ Compare True vs. Estimated Components")
