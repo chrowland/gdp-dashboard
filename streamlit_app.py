@@ -130,6 +130,9 @@ with col2:
     st.write("**Seasonality and Cycle**")
     st.line_chart(df["Season_cycle"])
 
+Recipe=df
+st.download_button("Download Timeseries Recipe",Recipe.to_csv(),"TSRecipe.csv",use_container_width=True)
+
 from statsmodels.tsa.seasonal import seasonal_decompose, STL
 st.header("🔍 Time Series Decomposition Analysis")
 
