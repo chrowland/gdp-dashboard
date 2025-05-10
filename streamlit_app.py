@@ -178,10 +178,9 @@ elif decomposition_method == "STL":
 elif decomposition_method == "Dummy Variable Regression":
     # Create dummy variables for each month
     df_dummies = train_df.copy()
-    df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month #df_dummies.index.month
-    month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True)
-    X = month_dummies
-    X = sm.add_constant(X)
+    df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
+    month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
+    X = sm.add_constant(month_dummies)
     y = df_dummies['Composite']
     model = sm.OLS(y, X).fit()
     estimated_seasonal = model.predict(X)
