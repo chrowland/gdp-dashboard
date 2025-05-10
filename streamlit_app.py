@@ -274,45 +274,45 @@ with st.spinner("Generating forecasts..."):
 
     elif decomposition_method == "Dummy Variable Regression":
         with st.spinner("Generating forecasts using Dummy Variable Regression..."):
-        # Prepare the training data
-        df_train = train_df.copy()
-        df_train['Month'] = pd.DatetimeIndex(df_train.index).month
-        df_train['Time'] = np.arange(len(df_train))  # Linear time trend
+            # Prepare the training data
+            df_train = train_df.copy()
+            df_train['Month'] = pd.DatetimeIndex(df_train.index).month
+            df_train['Time'] = np.arange(len(df_train))  # Linear time trend
 
-        # Create dummy variables for months
-        month_dummies_train = pd.get_dummies(df_train['Month'], prefix='month', drop_first=True, dtype=float)
+            # Create dummy variables for months
+            month_dummies_train = pd.get_dummies(df_train['Month'], prefix='month', drop_first=True, dtype=float)
 
-        # Combine trend and seasonal dummies
-        X_train = pd.concat([df_train['Time'], month_dummies_train], axis=1)
-        X_train = sm.add_constant(X_train)  # Adds intercept term
+            # Combine trend and seasonal dummies
+            X_train = pd.concat([df_train['Time'], month_dummies_train], axis=1)
+            X_train = sm.add_constant(X_train)  # Adds intercept term
 
-        y_train = df_train['Composite']
+            y_train = df_train['Composite']
 
-        # Fit the OLS model
-        model = sm.OLS(y_train, X_train).fit()
+            # Fit the OLS model
+            model = sm.OLS(y_train, X_train).fit()
 
-        # Prepare the test data
-        df_test = test_df.copy()
-        df_test['Month'] = pd.DatetimeIndex(df_test.index).month
-        df_test['Time'] = np.arange(len(df_train), len(df_train) + len(df_test))  # Continue the time trend
+            # Prepare the test data
+            df_test = test_df.copy()
+            df_test['Month'] = pd.DatetimeIndex(df_test.index).month
+            df_test['Time'] = np.arange(len(df_train), len(df_train) + len(df_test))  # Continue the time trend
 
-        # Create dummy variables for months in test data
-        month_dummies_test = pd.get_dummies(df_test['Month'], prefix='month', drop_first=True, dtype=float)
+            # Create dummy variables for months in test data
+            month_dummies_test = pd.get_dummies(df_test['Month'], prefix='month', drop_first=True, dtype=float)
 
-        # Ensure all dummy columns are present in test data
-        for col in month_dummies_train.columns:
-            if col not in month_dummies_test.columns:
-                month_dummies_test[col] = 0
-        month_dummies_test = month_dummies_test[month_dummies_train.columns]  # Ensure same column order
+            # Ensure all dummy columns are present in test data
+            for col in month_dummies_train.columns:
+                if col not in month_dummies_test.columns:
+                    month_dummies_test[col] = 0
+            month_dummies_test = month_dummies_test[month_dummies_train.columns]  # Ensure same column order
 
-        # Combine trend and seasonal dummies for test data
-        X_test = pd.concat([df_test['Time'], month_dummies_test], axis=1)
-        X_test = sm.add_constant(X_test)
-        X_test = X_test[X_train.columns]  # Ensure same column order as training data
+            # Combine trend and seasonal dummies for test data
+            X_test = pd.concat([df_test['Time'], month_dummies_test], axis=1)
+            X_test = sm.add_constant(X_test)
+            X_test = X_test[X_train.columns]  # Ensure same column order as training data
 
-        # Generate forecasts
-        forecast_values = model.predict(X_test)
-        forecast_series = pd.Series(forecast_values.values, index=test_df.index)
+            # Generate forecasts
+            forecast_values = model.predict(X_test)
+            forecast_series = pd.Series(forecast_values.values, index=test_df.index)
 
         
         
