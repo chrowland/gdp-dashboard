@@ -7,7 +7,7 @@ import datetime
 # Set page configuration
 st.set_page_config(page_title="Time Series Seasonality Simulator", layout="wide")
 
-st.title("📈 Time Series Seasonality Simulator")
+st.title("📈📈📈📈📈📈 Time Series Seasonality Simulator 📈📈📈📈📈📈")
 
 # Sidebar for user inputs
 st.sidebar.header("Configure Time Series Components")
@@ -238,7 +238,7 @@ if Model=="Additive":
 else:
     st.line_chart(comparison_df[["True Noise", "Estimated Residual Multiplicative"]])
 
-st.header("📈 Forecasting on Test Set")
+st.header(" Forecasting on Test Set")
 
 # Forecasting based on the selected decomposition method
 with st.spinner("Generating forecasts..."):
@@ -296,10 +296,6 @@ comparison_df = pd.DataFrame({
     "Forecast": forecast_series
 })
 
-# Plot the forecasts
-st.subheader("🔮 Forecast vs Actual")
-st.line_chart(comparison_df)
-
 # Combine training and test sets for the full composite series
 full_series = pd.concat([train_df['Composite'], test_df['Composite']])
 
@@ -310,8 +306,12 @@ plot_df = pd.DataFrame({
 })
 
 # Plot the full composite series and forecasted values
-st.subheader("🔮 Forecast vs Actual with Historical Composite Series")
+st.subheader(" Forecast vs Actual with Historical Composite Series")
 st.line_chart(plot_df)
+
+# Plot the forecasts
+st.subheader("🔮 Forecast vs Actual")
+st.line_chart(comparison_df)
 
 # Calculate MAPE
 def mean_absolute_percentage_error(y_true, y_pred):
