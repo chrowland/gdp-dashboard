@@ -200,27 +200,9 @@ elif decomposition_method == "SARIMA":
     with st.spinner("Performing SARIMA Decomposition..."):
         model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
         result = model.fit(disp=False)
-
-        # Obtain in-sample predictions
-        pred = result.get_prediction(start=train_df.index[0], end=train_df.index[-1])
-        predicted_mean = pred.predicted_mean
-
-        # Calculate residuals
-        estimated_residual = train_df["Composite"] - predicted_mean
-
-        # Note: Direct extraction of trend and seasonal components is not available
-        # in SARIMAXResults. For detailed decomposition, consider using alternative
-        # methods like STL or seasonal_decompose.
-        estimated_trend = pd.Series([np.nan] * len(train_df), index=train_df.index)
-        estimated_seasonal = pd.Series([np.nan] * len(train_df), index=train_df.index)
-        
-        
-        
-        #model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
-        #result = model.fit(disp=False)
-        #estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
-        #estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
-        #estimated_residual = result.resid
+        estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
+        estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
+        estimated_residual = result.resid
 
 # 3) Component Comparison Charts
 st.subheader("3️⃣ Compare True vs. Estimated Components")
