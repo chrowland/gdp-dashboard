@@ -201,9 +201,9 @@ elif decomposition_method == "SARIMA":
         model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
         result = model.fit(disp=False)
         estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
-        #estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
+        estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
         estimated_residual = result.resid
-        estimated_seasonal = train_df["Composite"]-estimated_trend-estimated_residual
+        #estimated_seasonal = train_df["Composite"]-estimated_trend-estimated_residual
 
 # 3) Component Comparison Charts
 st.subheader("3️⃣ Compare True vs. Estimated Components")
