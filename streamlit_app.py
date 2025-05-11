@@ -37,7 +37,7 @@ elif trend_type == "Quadratic":
 # Cycle parameters
 st.sidebar.subheader("Cycle Component")
 cycle_amplitude = st.sidebar.slider("Cycle Amplitude", min_value=0.0, max_value=10.0, value=6.7, step=0.1)
-cycle_period = st.sidebar.slider("Cycle Period (months)", min_value=6, max_value=60, value=43, step=1)
+cycle_period = st.sidebar.slider("Cycle Period (months)", min_value=1, max_value=60, value=43, step=1)
 cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_value=2*np.pi, value=1.5, step=0.1)
 
 # Seasonality parameters
