@@ -200,9 +200,27 @@ elif decomposition_method == "SARIMA":
     with st.spinner("Performing SARIMA Decomposition..."):
         model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
         result = model.fit(disp=False)
-        estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
-        estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
-        estimated_residual = result.resid
+
+        # Obtain in-sample predictions
+        pred = result.get_prediction(start=train_df.index[0], end=train_df.index[-1])
+        predicted_mean = pred.predicted_mean
+
+        # Calculate residuals
+        estimated_residual = train_df["Composite"] - predicted_mean
+
+        # Note: Direct extraction of trend and seasonal components is not available
+        # in SARIMAXResults. For detailed decomposition, consider using alternative
+        # methods like STL or seasonal_decompose.
+        estimated_trend = pd.Series([np.nan] * len(train_df), index=train_df.index)
+        estimated_seasonal = pd.Series([np.nan] * len(train_df), index=train_df.index)
+        
+        
+        
+        #model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+        #result = model.fit(disp=False)
+        #estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
+        #estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
+        #estimated_residual = result.resid
 
 # 3) Component Comparison Charts
 st.subheader("3️⃣ Compare True vs. Estimated Components")
@@ -314,29 +332,6 @@ with st.spinner("Generating forecasts..."):
             forecast_values = model.predict(X_test)
             forecast_series = pd.Series(forecast_values.values, index=test_df.index)
 
-        
-        
-        
-        ## Create dummy variables for each month
-        #df_dummies = train_df.copy()
-        #df_dummies['Month'] = pd.DatetimeIndex(df_dummies.index).month
-        #month_dummies = pd.get_dummies(df_dummies['Month'], prefix='month', drop_first=True, dtype=float)
-        #X_train = sm.add_constant(month_dummies)
-        #y_train = df_dummies['Composite']
-        #model = sm.OLS(y_train, X_train).fit()
-
-        ## Prepare test set dummy variables
-        #test_months = pd.DatetimeIndex(test_df.index).month
-        #test_dummies = pd.get_dummies(test_months, prefix='month', drop_first=True, dtype=float)
-        ## Ensure all dummy columns are present
-        #for col in X_train.columns:
-        #    if col not in test_dummies.columns and col != 'const':
-        #        test_dummies[col] = 0
-        #X_test = sm.add_constant(test_dummies)
-        #X_test = X_test[X_train.columns]  # Ensure same column order
-
-        #forecast_values = model.predict(X_test)
-        #forecast_series = pd.Series(forecast_values.values, index=forecast_index)
 
     elif decomposition_method == "SARIMA":
         sarima_model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
