@@ -43,7 +43,7 @@ cycle_phase = st.sidebar.slider("Cycle Phase (radians)", min_value=0.0, max_valu
 # Seasonality parameters
 st.sidebar.subheader("Seasonality Component")
 seasonality_amplitude = st.sidebar.slider("Seasonality Amplitude", min_value=0.0, max_value=10.0, value=6.0, step=0.1)
-seasonality_mult = st.sidebar.slider("Seasonality Multiplier", min_value=0.0, max_value=3.0, value=0.0, step=1.0)
+seasonality_mult = st.sidebar.slider("Seasonality Multiplier (0 is Additive)", min_value=0.0, max_value=3.0, value=0.0, step=1.0)
 
 # Noise parameters
 st.sidebar.subheader("Noise Component")
