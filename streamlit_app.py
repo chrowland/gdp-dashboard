@@ -154,8 +154,8 @@ test_df = df.iloc[split_index:]
 # 2) Decomposition Method Selection
 st.subheader("2️⃣ Choose Decomposition Method")
 decomposition_method = st.selectbox(
-    "Select a decomposition method:",
-    options=["seasonal_decompose (smoothing)", "STL (smoothing)", "Dummy Variable Regression", "SARIMA (Autoregressive Lags)"]
+    "Select a decomposition method (Smoothing = seasonal_decompose OR STL; Autogregressive Lags = SARIMA; Dummy = Dummy Variable Regression):",
+    options=["seasonal_decompose", "STL", "Dummy Variable Regression", "SARIMA"]
 )
 
 Model="Additive"
