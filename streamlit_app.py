@@ -351,7 +351,8 @@ st.line_chart(plot_df)
 
 # Plot the forecasts
 st.subheader("🔮 Forecast vs Actual")
-st.line_chart(comparison_df)
+#st.line_chart(comparison_df)
+st.bar_chart(comparison_df)
 
 # Calculate MAPE
 def mean_absolute_percentage_error(y_true, y_pred):
@@ -365,4 +366,5 @@ def mean_absolute_percentage_error(y_true, y_pred):
 mape_value = mean_absolute_percentage_error(test_df['Composite'], forecast_series)
 
 # Display MAPE
+st.subheader("Forecast Error")
 st.metric(label="📉 Mean Absolute Percentage Error (MAPE)", value=f"{mape_value:.2f}%")
