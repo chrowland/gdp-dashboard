@@ -365,19 +365,19 @@ comparison_df = pd.DataFrame({
 # Melt to long format
 long_df = comparison_df.melt(id_vars=["Date"], var_name="Type", value_name="Value")
 
-# Create the grouped bar chart
+# Create grouped bar chart
 chart = alt.Chart(long_df).mark_bar().encode(
-    x=alt.X("Date:T", title="Date"),
-    y=alt.Y("Value:Q", title="Value"),
-    color="Type:N",
-    column="Type:N"
+    x=alt.X('Date:T', title='Date', axis=alt.Axis(format='%b %Y')),
+    xOffset='Type:N',  # <-- key to side-by-side grouping
+    y=alt.Y('Value:Q', title='Value'),
+    color='Type:N'
 ).properties(
-    width=300
+    width=700,
+    height=400
 )
 
 # Display in Streamlit
 st.altair_chart(chart, use_container_width=True)
-
 
 # Calculate MAPE
 def mean_absolute_percentage_error(y_true, y_pred):
