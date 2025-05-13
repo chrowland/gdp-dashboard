@@ -198,8 +198,11 @@ elif decomposition_method == "Dummy Variable Regression":
 
 elif decomposition_method == "SARIMA":
     # Fit SARIMA model
+    P = st.sidebar.slider("P (AR Component)", min_value=1, max_value=3, value=1, step=1)
+    D = st.sidebar.slider("D (Differencing Component)", min_value=1, max_value=2, value=1, step=1)
+    Q = st.sidebar.slider("Q (Moving Average Component)", min_value=1, max_value=4, value=1, step=1)
     with st.spinner("Performing SARIMA Decomposition..."):
-        model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+        model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(P, D, Q, 12))
         result = model.fit(disp=False)
         estimated_trend = result.trend if hasattr(result, 'trend') else pd.Series([0]*len(train_df), index=train_df.index)
         estimated_seasonal = result.seasonal if hasattr(result, 'seasonal') else pd.Series([0]*len(train_df), index=train_df.index)
