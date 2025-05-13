@@ -322,7 +322,7 @@ with st.spinner("Generating forecasts..."):
 
 
     elif decomposition_method == "SARIMA":
-        sarima_model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+        sarima_model = SARIMAX(train_df["Composite"], order=(1, 1, 1), seasonal_order=(P, D, Q, 12))
         sarima_result = sarima_model.fit(disp=False)
         forecast_values = sarima_result.forecast(steps=forecast_steps)
         forecast_series = pd.Series(forecast_values.values, index=forecast_index)
