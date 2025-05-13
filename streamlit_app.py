@@ -355,14 +355,27 @@ st.subheader("🔮 Forecast vs Actual")
 #st.line_chart(comparison_df)
 #st.bar_chart(comparison_df,stack=False)
 
+# Prepare the data
+comparison_df = pd.DataFrame({
+    "Date": test_df.index,
+    "Actual": test_df["Composite"],
+    "Forecast": forecast_series
+})
+
+# Melt to long format
 long_df = comparison_df.melt(id_vars=["Date"], var_name="Type", value_name="Value")
 
-chart = alt.Chart(long_df).mark_bar(opacity=0.6).encode(
-    x=alt.X("Date:T", axis=alt.Axis(title="Date")),
-    y=alt.Y("Value:Q", axis=alt.Axis(title="Value")),
-    color="Type:N"
-).properties(height=400)
+# Create the grouped bar chart
+chart = alt.Chart(long_df).mark_bar().encode(
+    x=alt.X("Date:T", title="Date"),
+    y=alt.Y("Value:Q", title="Value"),
+    color="Type:N",
+    column="Type:N"
+).properties(
+    width=300
+)
 
+# Display in Streamlit
 st.altair_chart(chart, use_container_width=True)
 
 
