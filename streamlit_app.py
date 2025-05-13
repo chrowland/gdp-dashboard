@@ -374,7 +374,7 @@ chart = alt.Chart(long_df).mark_bar().encode(
     x=alt.X('DateStr:N', title='Date'),
     xOffset=alt.X('Type:N'),
     y=alt.Y('Value:Q', title='Value'),
-    color='Type:N'
+    color=alt.Color('Type:N', legend=alt.Legend(orient="bottom"))
 ).properties(
     width=700,
     height=400
