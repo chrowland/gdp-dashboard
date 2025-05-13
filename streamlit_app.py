@@ -352,7 +352,7 @@ st.line_chart(plot_df)
 # Plot the forecasts
 st.subheader("🔮 Forecast vs Actual")
 #st.line_chart(comparison_df)
-st.bar_chart(comparison_df)
+st.bar_chart(comparison_df,stack=False)
 
 # Calculate MAPE
 def mean_absolute_percentage_error(y_true, y_pred):
