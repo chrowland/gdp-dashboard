@@ -2,6 +2,7 @@ import streamlit as st
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
+import altair as alt
 import datetime
 
 # Set page configuration
@@ -352,7 +353,18 @@ st.line_chart(plot_df)
 # Plot the forecasts
 st.subheader("🔮 Forecast vs Actual")
 #st.line_chart(comparison_df)
-st.bar_chart(comparison_df,stack=False)
+#st.bar_chart(comparison_df,stack=False)
+
+long_df = comparison_df.melt(id_vars=["Date"], var_name="Type", value_name="Value")
+
+chart = alt.Chart(long_df).mark_bar(opacity=0.6).encode(
+    x=alt.X("Date:T", axis=alt.Axis(title="Date")),
+    y=alt.Y("Value:Q", axis=alt.Axis(title="Value")),
+    color="Type:N"
+).properties(height=400)
+
+st.altair_chart(chart, use_container_width=True)
+
 
 # Calculate MAPE
 def mean_absolute_percentage_error(y_true, y_pred):
