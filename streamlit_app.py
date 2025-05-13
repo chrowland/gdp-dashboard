@@ -356,23 +356,23 @@ st.subheader("🔮 Forecast vs Actual")
 #st.bar_chart(comparison_df,stack=False)
 
 
-# Prepare the data
+# Construct comparison DataFrame
 comparison_df = pd.DataFrame({
-    "Date": test_df.index,
     "Actual": test_df["Composite"],
     "Forecast": forecast_series
 })
+comparison_df["Date"] = comparison_df.index  # move index to column
 
-# Convert Date to string for categorical x-axis
-comparison_df["DateStr"] = comparison_df["Date"].dt.strftime("%Y-%m")
+# Reshape to long format
+long_df = comparison_df.melt(id_vars="Date", var_name="Type", value_name="Value")
 
-# Melt to long format
-long_df = comparison_df.melt(id_vars=["DateStr"], var_name="Type", value_name="Value")
+# Format Date for grouping (optional, simplifies x-axis)
+long_df["DateStr"] = long_df["Date"].dt.strftime("%Y-%m")
 
 # Create grouped bar chart
 chart = alt.Chart(long_df).mark_bar().encode(
     x=alt.X('DateStr:N', title='Date'),
-    xOffset='Type:N',                   # Offsets bar within group
+    xOffset=alt.X('Type:N'),
     y=alt.Y('Value:Q', title='Value'),
     color='Type:N'
 ).properties(
@@ -380,6 +380,7 @@ chart = alt.Chart(long_df).mark_bar().encode(
     height=400
 )
 
+# Display in Streamlit
 st.altair_chart(chart, use_container_width=True)
 
 # Calculate MAPE
