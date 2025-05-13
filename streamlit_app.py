@@ -198,6 +198,7 @@ elif decomposition_method == "Dummy Variable Regression":
 
 elif decomposition_method == "SARIMA":
     # Fit SARIMA model
+    st.sidebar.subheader("SARIMA Order")
     P = st.sidebar.slider("P (AR Component)", min_value=1, max_value=3, value=1, step=1)
     D = st.sidebar.slider("D (Differencing Component)", min_value=1, max_value=2, value=1, step=1)
     Q = st.sidebar.slider("Q (Moving Average Component)", min_value=1, max_value=4, value=1, step=1)
