@@ -57,11 +57,6 @@ outliers=st.sidebar.checkbox("Outliers")
 
 
 
-
-
-
-
-
 # Generate date range
 start_date = datetime.date(2018, 1, 1)
 end_date = datetime.date.today()
@@ -93,7 +88,7 @@ noise = np.random.normal(0, noise_std, n)
 if outliers:
     outlier_count=2 #int(n/20)
     outlier_series=np.array([1]*(outlier_count)+[-1]*(outlier_count)+[0]*(n-2*outlier_count))
-    np.random.seed(42)
+    np.random.seed(40)
     np.random.shuffle(outlier_series)
     noise=noise+outlier_series*noise_std*5
 
