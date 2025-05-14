@@ -53,10 +53,7 @@ noise_std = st.sidebar.slider("Noise Standard Deviation", min_value=0.0, max_val
 
 # Parameters for outliers
 outliers=st.sidebar.checkbox("Outliers")
-outlier_count=int(n/100)
-outlier_series=np.array([10]*(outlier_count)+[0]*(n-outlier_count))
-np.random.seed(42)
-np.random.shuffle(outlier_series)
+
 
 
 
@@ -94,6 +91,10 @@ seasonality = seasonality_amplitude* (1+seasonality_mult*np.log(trend_cycle/inte
 np.random.seed(42)  # For reproducibility
 noise = np.random.normal(0, noise_std, n)
 if outtliers=="True":
+    outlier_count=int(n/100)
+    outlier_series=np.array([10]*(outlier_count)+[0]*(n-outlier_count))
+    np.random.seed(42)
+    np.random.shuffle(outlier_series)
     noise=noise+outlier_series*noise_std*4
 
 # Trend + Noise
