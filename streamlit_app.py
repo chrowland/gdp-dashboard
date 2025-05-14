@@ -91,11 +91,11 @@ seasonality = seasonality_amplitude* (1+seasonality_mult*np.log(trend_cycle/inte
 np.random.seed(42)  # For reproducibility
 noise = np.random.normal(0, noise_std, n)
 if outliers:
-    outlier_count=int(n/30)
-    outlier_series=np.array([10]*(outlier_count)+[0]*(n-outlier_count))
+    outlier_count=int(n/10)
+    outlier_series=np.array([1]*(outlier_count)+[-1]*(outlier_count)+[0]*(n-2*outlier_count))
     np.random.seed(42)
     np.random.shuffle(outlier_series)
-    noise=noise+outlier_series*noise_std*1.5
+    noise=noise+outlier_series*noise_std*4
 
 # Trend + Noise
 trend_noise = trend+noise
