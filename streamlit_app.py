@@ -51,6 +51,20 @@ seasonality_mult = st.sidebar.slider("Seasonality Multiplier (0 is Additive)", m
 st.sidebar.subheader("Noise Component")
 noise_std = st.sidebar.slider("Noise Standard Deviation", min_value=0.0, max_value=5.0, value=2.0, step=0.1)
 
+# Parameters for outliers
+outliers=st.sidebar.checkbox("Outliers")
+outlier_count=int(n/100)
+outlier_series=np.array([10]*(outlier_count)+[0]*(n-outlier_count))
+np.random.seed(42)
+np.random.shuffle(outlier_series)
+
+
+
+
+
+
+
+
 # Generate date range
 start_date = datetime.date(2018, 1, 1)
 end_date = datetime.date.today()
@@ -79,6 +93,8 @@ seasonality = seasonality_amplitude* (1+seasonality_mult*np.log(trend_cycle/inte
 # Noise
 np.random.seed(42)  # For reproducibility
 noise = np.random.normal(0, noise_std, n)
+if outtliers=="True":
+    noise=noise+outlier_series*noise_std*4
 
 # Trend + Noise
 trend_noise = trend+noise
